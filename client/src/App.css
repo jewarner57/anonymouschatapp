@@ -1,0 +1,57 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  display: block;
+  position: fixed;
+  width: 100vw;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #1e2127;
+}
+
+.App-title {
+  color: white;
+  text-align: left;
+  padding-left: 50px;
+}
+
+.App-body {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.Button {
+  width: 300px;
+  background-color: rgb(0, 128, 128);
+  color: white;
+  text-decoration: none;
+  margin: 20px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+}
+
+.Button:hover {
+  background-color: purple;
+}
