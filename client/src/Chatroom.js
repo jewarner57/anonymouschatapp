@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Button from './Button';
 import socketIOClient from 'socket.io-client';
+import ToggleSwitch from './ToggleSwitch';
 
 let socket;
 
@@ -11,6 +12,7 @@ class Chatroom extends React.Component {
     this.state = { messageList: [] };
     this.sendMessage = this.sendMessage.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleSwitchFlip = this.handleSwitchFlip.bind(this);
   }
 
   sendMessage() {
@@ -23,7 +25,7 @@ class Chatroom extends React.Component {
       type: 'outgoingMessage',
     });
 
-    this.setState({ messageList: recievedMessageList });
+    this.setState({ messageList: recievedMessageList, messageValue: '' });
   }
 
   componentDidMount() {
@@ -42,22 +44,38 @@ class Chatroom extends React.Component {
     this.setState({ messageList: newMessageList });
   }
 
+  handleSwitchFlip(event) {
+    this.setState({ toggleSwitchValue: event.target.checked });
+  }
+
   handleChange(event) {
-    this.setState({ messageValue: event.target.value });
+    this.setState({ messageValue: event.target.value }, () => {
+      let message = this.state.messageValue;
+      let finalChar = message.substring(message.length - 1);
+
+      if (
+        (finalChar === '.' || finalChar === '?' || finalChar === '!') &&
+        this.state.toggleSwitchValue === true
+      ) {
+        this.sendMessage();
+      }
+    });
   }
 
   render() {
     return (
       <div className='chatbox-body'>
         <h4 className='chatTitle'>{this.props.title}</h4>
-        <div className='message-container'>
-          {this.state.messageList.map((value, index) => {
-            return (
-              <p key={index} className={value.type}>
-                {value.message}
-              </p>
-            );
-          })}
+        <div className='message-list-container'>
+          <div className='message-list'>
+            {this.state.messageList.map((value, index) => {
+              return (
+                <p key={index} className={value.type}>
+                  {value.message}
+                </p>
+              );
+            })}
+          </div>
         </div>
         <div className='text-form-container'>
           <textarea
@@ -66,11 +84,17 @@ class Chatroom extends React.Component {
             className='message'
             placeholder='Type stuff here'
           ></textarea>
-          <Button
-            buttonClicked={this.sendMessage.bind(this)}
-            destination='NA'
-            title='Send'
-          ></Button>
+          <div className='input-container'>
+            <Button
+              buttonClicked={this.sendMessage.bind(this)}
+              destination='NA'
+              title='Send'
+            ></Button>
+            <ToggleSwitch
+              switchFlipped={this.handleSwitchFlip}
+              title='Auto Send After: ". ? !"'
+            ></ToggleSwitch>
+          </div>
         </div>
       </div>
     );
