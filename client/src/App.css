@@ -28,7 +28,7 @@
   padding-left: 50px;
 }
 
-.App-body {
+.page-body {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -37,6 +37,59 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.chatbox-body {
+  width: 70vw;
+  min-height: 70vh;
+  padding: 0px;
+  background-color: #1e2127;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-container {
+  width: 90%;
+  min-height: 30vh;
+  border: 2px solid #282c34;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.message {
+  width: 100%;
+  height: 30px;
+  outline: none;
+  resize: none;
+  background-color: white;
+  border: 3px solid #282c34;
+}
+
+.text-form-container {
+  width: 55vw;
+  height: 20%;
+  margin: 20px;
+}
+
+.outgoingMessage {
+  background-color: purple;
+  max-width: 50%;
+  float: right;
+  padding: 10px 20px 10px 20px;
+  margin: 10px 20px 20px auto;
+  border-radius: 10px;
+}
+
+.incomingMessage {
+  background-color: gray;
+  max-width: 50%;
+  float: left;
+  padding: 10px 20px 10px 20px;
+  margin: 10px 20px;
+  border-radius: 10px;
 }
 
 .Button {
@@ -50,6 +103,7 @@
   border-radius: 3px;
   font-size: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+  border: none;
 }
 
 .Button:hover {

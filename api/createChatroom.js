@@ -8,15 +8,8 @@ function createChatroom() {
     id: token,
     password: '',
     maxPopulation: 10,
-    timeCreated: 0,
+    timeCreated: new Date(),
     currentUsers: [],
-    messages: [
-      {
-        text: 'Hello! This chat will be erased when all members have left.',
-        timeSent: new Date(),
-        user: 'Welcome Bot',
-      },
-    ],
   };
 
   //empty chatroom.json file should contain: { "chatrooms": [] }

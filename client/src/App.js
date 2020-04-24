@@ -1,65 +1,50 @@
 import React from 'react';
-import { NavLink, Switch, Route, BrowserRouter } from 'react-router-dom';
-import CreateChatroom from './CreateChatroom';
-import JoinChatroom from './JoinChatroom';
-import logo from './logo.svg';
+import CreateRoom from './CreateRoom';
+import JoinRoom from './JoinRoom';
 import './App.css';
+import Welcome from './Welcome';
+import Chatroom from './Chatroom';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { apiResponse: '' };
+    this.state = {
+      activePage: 'welcome',
+      response: 0,
+      endpoint: 'http://localhost:5000/',
+    };
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  callAPI() {
-    fetch('http://localhost:9000/testAPI')
-      .then((res) => res.text())
-      .then((res) => this.setState({ apiResponse: res }));
-  }
-
-  componentWillMount() {
-    this.callAPI();
+  handleClick(page) {
+    this.setState({ activePage: page });
   }
 
   render() {
     return (
-      <BrowserRouter>
-        <div className='App'>
-          <header className='App-header'>
-            <h3 className='App-title'>
-              No Know: Secure, Anonymous, No save, Chat
-            </h3>
-          </header>
-          <div className='App-body'>
-            <p className='App-intro'>{this.state.apiResponse}</p>
+      <div className='App'>
+        <header className='App-header'>
+          <h3 className='App-title'>
+            No Know: Secure, Anonymous, No save, Chat
+          </h3>
+        </header>
 
-            <NavLink
-              to='/NewChatroom'
-              className='Button'
-              activeClassName='selected'
-            >
-              Start a Chatroom
-            </NavLink>
-
-            <NavLink
-              to='/JoinChatroom'
-              className='Button'
-              ctiveClassName='selected'
-            >
-              <div> Join Chatroom </div>
-            </NavLink>
+        {this.state.activePage === 'create' ? (
+          <CreateRoom></CreateRoom>
+        ) : this.state.activePage === 'join' ? (
+          <JoinRoom></JoinRoom>
+        ) : this.state.activePage === 'welcome' ? (
+          <div>
+            <Welcome buttonClicked={this.handleClick.bind(this)}></Welcome>
+            <div className='page-body'>
+              <Chatroom
+                title='Global Chat'
+                endpoint={this.state.endpoint}
+              ></Chatroom>
+            </div>
           </div>
-        </div>
-
-        <Switch>
-          <Route path='/NewChatroom'>
-            <CreateChatroom></CreateChatroom>
-          </Route>
-          <Route path='/JoinChatroom'>
-            <JoinChatroom></JoinChatroom>
-          </Route>
-        </Switch>
-      </BrowserRouter>
+        ) : null}
+      </div>
     );
   }
 }
