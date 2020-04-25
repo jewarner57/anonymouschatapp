@@ -1,6 +1,8 @@
 const http = require('http');
 const express = require('express');
 const socketIo = require('socket.io');
+const createChatroom = require('./createChatroom');
+const getChatroomById = require('./getChatroomById');
 
 //Port from environment variable or default - 5000
 const port = process.env.PORT || 5000;
@@ -12,14 +14,36 @@ const io = socketIo(server);
 
 //Setting up a socket with the namespace "connection" for new sockets
 io.on('connection', (socket) => {
-  console.log('New client connected');
   socket.join('global');
-
-  socket.emit('outgoing data', 'Socket Connection Established');
+  console.log('Client Connected');
 
   socket.on('sendGlobalMessage', (message) => {
-    console.log('Global Chat: ', message);
-    socket.broadcast.to('global').emit('receiveGlobalMessage', message);
+    console.log('Global Chat: ', message.body);
+    socket.broadcast.to('global').emit('receiveGlobalMessage', message.body);
+  });
+
+  socket.on('joinChatroom', async (code) => {
+    let joinRoom = await getChatroomById.getChatroomById(code);
+
+    if (joinRoom !== false) {
+      socket.join(joinRoom);
+    }
+
+    socket.emit('validateJoin', joinRoom);
+  });
+
+  socket.on('createNewChatroom', (settings) => {
+    let roomCode = createChatroom.createChatroom();
+    socket.leave('global');
+    socket.join(roomCode);
+
+    socket.emit('recieveChatroomCode', roomCode);
+  });
+
+  socket.on('sendPrivateMessage', (message) => {
+    socket.broadcast
+      .to(message.roomID)
+      .emit('recieve' + message.roomID, message.body);
   });
 
   socket.on('disconnect', () => console.log('Client disconnected'));

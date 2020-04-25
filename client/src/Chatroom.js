@@ -1,10 +1,7 @@
 import React from 'react';
 import './App.css';
 import Button from './Button';
-import socketIOClient from 'socket.io-client';
 import ToggleSwitch from './ToggleSwitch';
-
-let socket;
 
 class Chatroom extends React.Component {
   constructor(props) {
@@ -16,7 +13,10 @@ class Chatroom extends React.Component {
   }
 
   sendMessage() {
-    socket.emit('sendGlobalMessage', this.state.messageValue);
+    this.props.socket.emit(this.props.onSend, {
+      roomID: this.props.roomID,
+      body: this.state.messageValue,
+    });
 
     let recievedMessageList = this.state.messageList;
 
@@ -29,12 +29,9 @@ class Chatroom extends React.Component {
   }
 
   componentDidMount() {
-    const { endpoint } = this.props;
     let messageList = this.state.messageList;
 
-    socket = socketIOClient(endpoint);
-
-    socket.on('receiveGlobalMessage', (message) => {
+    this.props.socket.on(this.props.onRecieve, (message) => {
       messageList.push({ message: message, type: 'incomingMessage' });
       this.updateMessageList(messageList);
     });

@@ -4,6 +4,7 @@ import JoinRoom from './JoinRoom';
 import './App.css';
 import Welcome from './Welcome';
 import Chatroom from './Chatroom';
+import socket from './socketConfig';
 
 class App extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class App extends React.Component {
       activePage: 'welcome',
       response: 0,
       endpoint: 'http://localhost:5000/',
+      socket: socket,
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -24,22 +26,22 @@ class App extends React.Component {
     return (
       <div className='App'>
         <header className='App-header'>
-          <h3 className='App-title'>
-            No Know: Secure, Anonymous, No save, Chat
-          </h3>
+          <h3 className='App-title'>No Know: Anonymous, No save, Chat</h3>
         </header>
-
         {this.state.activePage === 'create' ? (
-          <CreateRoom></CreateRoom>
+          <CreateRoom socket={this.state.socket}></CreateRoom>
         ) : this.state.activePage === 'join' ? (
-          <JoinRoom></JoinRoom>
+          <JoinRoom socket={this.state.socket}></JoinRoom>
         ) : this.state.activePage === 'welcome' ? (
           <div>
             <Welcome buttonClicked={this.handleClick.bind(this)}></Welcome>
             <div className='page-body'>
               <Chatroom
+                socket={this.state.socket}
                 title='Global Chat'
-                endpoint={this.state.endpoint}
+                onSend='sendGlobalMessage'
+                onRecieve='receiveGlobalMessage'
+                roomID='Global'
               ></Chatroom>
             </div>
           </div>
