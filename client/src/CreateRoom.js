@@ -6,15 +6,22 @@ import Chatroom from './Chatroom';
 class CreateRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { props, activePage: 'enterSettings' };
+    this.state = { props, activePage: 'enterSettings', pass: '', mau: '10' };
 
     this.handleClick = this.handleClick.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   handleClick() {
+    let maxUsers = this.state.mau;
+
+    if (isNaN(this.state.mau)) {
+      maxUsers = 10;
+    }
+
     this.props.socket.emit('createNewChatroom', {
-      password: '123',
-      maxUsers: '99',
+      password: this.state.pass,
+      maxUsers: maxUsers,
     });
   }
 
@@ -26,6 +33,10 @@ class CreateRoom extends React.Component {
     });
   }
 
+  handleChange(event) {
+    this.setState({ [event.target.id]: event.target.value });
+  }
+
   render() {
     return (
       <div className='page-body'>
@@ -34,10 +45,20 @@ class CreateRoom extends React.Component {
             <p>Create New Room</p>
             <form>
               <label htmlFor='pass'>Password</label>
-              <input type='text' id='pass'></input>
+              <input
+                type='text'
+                id='pass'
+                onChange={this.handleChange}
+                value={this.state.pass}
+              ></input>
 
               <label htmlFor='mau'>Max Allowed Users</label>
-              <input type='text' id='mau'></input>
+              <input
+                type='text'
+                id='mau'
+                onChange={this.handleChange}
+                value={this.state.mau}
+              ></input>
             </form>
 
             <Button

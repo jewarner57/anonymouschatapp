@@ -62,7 +62,7 @@ class Chatroom extends React.Component {
   render() {
     return (
       <div className='chatbox-body'>
-        <h4 className='chatTitle'>{this.props.title}</h4>
+        <h4 className='chatTitle'>Room ID: {this.props.title}</h4>
         <div className='message-list-container'>
           <div className='message-list'>
             {this.state.messageList.map((value, index) => {

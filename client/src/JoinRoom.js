@@ -9,7 +9,8 @@ class JoinRoom extends React.Component {
     this.state = {
       props,
       activePage: 'enterCode',
-      codeValue: '',
+      id: '',
+      pass: '',
       roomID: '',
     };
     this.handleClick = this.handleClick.bind(this);
@@ -17,23 +18,30 @@ class JoinRoom extends React.Component {
   }
 
   componentDidMount() {
-    this.props.socket.on('validateJoin', (code) => {
-      if (code !== false) {
-        this.setState({ roomID: code }, () => {
+    this.props.socket.on('validateJoin', (joinObj) => {
+      if (joinObj.willJoin !== false) {
+        this.setState({ roomID: joinObj.id }, () => {
           this.setState({ activePage: 'chatroom' });
         });
       } else {
-        alert('Room ID is Invalid');
+        alert(joinObj.status);
       }
+    });
+
+    this.props.socket.on('joinError', (error) => {
+      alert(error);
     });
   }
 
   handleClick() {
-    this.props.socket.emit('joinChatroom', this.state.codeValue);
+    this.props.socket.emit('joinChatroom', {
+      id: this.state.id,
+      password: this.state.pass,
+    });
   }
 
   handleChange(event) {
-    this.setState({ codeValue: event.target.value });
+    this.setState({ [event.target.id]: event.target.value });
   }
 
   render() {
@@ -48,7 +56,15 @@ class JoinRoom extends React.Component {
                 type='text'
                 id='id'
                 onChange={this.handleChange}
-                value={this.state.codeValue}
+                value={this.state.id}
+              ></input>
+
+              <label htmlFor='pass'>Password</label>
+              <input
+                type='text'
+                id='pass'
+                onChange={this.handleChange}
+                value={this.state.pass}
               ></input>
             </form>
 

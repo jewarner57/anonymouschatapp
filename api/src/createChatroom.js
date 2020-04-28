@@ -1,15 +1,16 @@
-var chatrooms = './chatrooms.json';
+let chatrooms = './db/chatrooms.json';
 var fs = require('fs');
 
-function createChatroom() {
-  let token = Math.floor(Math.random() * 100000000);
+async function createChatroom(settings, userId) {
+  let password = settings.password;
+  let maxUsers = settings.maxUsers;
+  let token = Math.floor(Math.random() * 100000000000);
 
   let newChatroom = {
     id: token,
-    password: '',
-    maxPopulation: 10,
+    password: password,
+    maxPopulation: maxUsers,
     timeCreated: new Date(),
-    currentUsers: [],
   };
 
   //empty chatroom.json file should contain: { "chatrooms": [] }
@@ -21,12 +22,9 @@ function createChatroom() {
       chatroomObj.chatrooms.push(newChatroom);
       chatroomObj = JSON.stringify(chatroomObj);
 
-      fs.writeFile(chatrooms, chatroomObj, 'utf8', () =>
-        console.log('New Chatroom Added')
-      );
+      fs.writeFile(chatrooms, chatroomObj, 'utf8', () => {});
     }
   });
-
   return token;
 }
 
