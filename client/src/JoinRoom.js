@@ -12,6 +12,7 @@ class JoinRoom extends React.Component {
       id: '',
       pass: '',
       roomID: '',
+      joinError: '',
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -21,15 +22,17 @@ class JoinRoom extends React.Component {
     this.props.socket.on('validateJoin', (joinObj) => {
       if (joinObj.willJoin !== false) {
         this.setState({ roomID: joinObj.id }, () => {
-          this.setState({ activePage: 'chatroom' });
+          this.setState({ activePage: 'chatroom' }, () => {
+            this.props.socket.emit('getRoomPopulation', this.state.roomID);
+          });
         });
       } else {
-        alert(joinObj.status);
+        this.setState({ joinError: joinObj.status });
       }
     });
 
     this.props.socket.on('joinError', (error) => {
-      alert(error);
+      this.setState({ joinError: error });
     });
   }
 
@@ -50,22 +53,26 @@ class JoinRoom extends React.Component {
         {this.state.activePage === 'enterCode' ? (
           <div>
             <p>Join Room</p>
-            <form>
-              <label htmlFor='id'>Room Code</label>
-              <input
-                type='text'
-                id='id'
-                onChange={this.handleChange}
-                value={this.state.id}
-              ></input>
-
-              <label htmlFor='pass'>Password</label>
-              <input
-                type='text'
-                id='pass'
-                onChange={this.handleChange}
-                value={this.state.pass}
-              ></input>
+            <form className='form-container'>
+              <div>
+                <label htmlFor='id'>Room Code:</label>
+                <input
+                  type='text'
+                  id='id'
+                  onChange={this.handleChange}
+                  value={this.state.id}
+                ></input>
+              </div>
+              <div>
+                <label htmlFor='pass'>Password:</label>
+                <input
+                  type='text'
+                  id='pass'
+                  onChange={this.handleChange}
+                  value={this.state.pass}
+                ></input>
+              </div>
+              <p className='formErrors'>{this.state.joinError}</p>
             </form>
 
             <Button

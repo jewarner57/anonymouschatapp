@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 const createChatroom = require('./createChatroom');
 const joinChatroom = require('./joinChatroomById');
 const findEmptyRooms = require('./findEmptyRooms');
+const getRoomMaxUsers = require('./getRoomMaxUsers');
 
 //Port from environment variable or default - 5000
 const port = process.env.PORT || 5000;
@@ -16,19 +17,19 @@ const io = socketIo(server);
 //Setting up a socket with the namespace "connection" for new sockets
 io.on('connection', (socket) => {
   //console.log('Client Connected');
-  socket.join('global');
-
-  socket.on('sendGlobalMessage', (message) => {
-    console.log('Global Chat: ', message.body);
-    socket.broadcast.to('global').emit('receiveGlobalMessage', message.body);
+  socket.join('global', function () {
+    io.in('global').emit('recieveRoomPopulation', {
+      users: io.sockets.adapter.rooms['global'].length,
+      maxUsers: '-',
+    });
   });
 
-  socket.on('getRoomPopulation', (roomID) => {
-    let roomPopulation = io.socket.adapter.rooms[roomID].length;
-    let roomMaxPopulation = getRoomMaxUsers.getRoomMaxUsers(roomID);
-
-    console.log(roomPopulation);
-    socket.emit('recieveRoomPopulation', roomPopulation);
+  socket.on('sendGlobalMessage', (message) => {
+    console.log('Global Chat: ', message.username + ': ' + message.body);
+    socket.broadcast.to('global').emit('receiveGlobalMessage', {
+      body: message.body,
+      username: message.username,
+    });
   });
 
   socket.on('createNewChatroom', async (settings) => {
@@ -45,7 +46,7 @@ io.on('connection', (socket) => {
 
     let joinRoom = await joinChatroom.joinChatroomById(
       roomObj,
-      io.sockets.adapter.rooms[roomObj.id]
+      io.sockets.adapter.rooms[roomObj.id.trim()]
     );
 
     if (joinRoom.willJoin !== false) {
@@ -59,7 +60,19 @@ io.on('connection', (socket) => {
   socket.on('sendPrivateMessage', (message) => {
     socket.broadcast
       .to(message.roomID)
-      .emit('recieve' + message.roomID, message.body);
+      .emit('recieve' + message.roomID, {
+        body: message.body,
+        username: message.username,
+      });
+  });
+
+  socket.on('getRoomPopulation', async (roomID) => {
+    let population = {
+      users: io.sockets.adapter.rooms[roomID].length,
+      maxUsers: await getRoomMaxUsers.getRoomMaxUsers(roomID),
+    };
+
+    io.in(roomID).emit('recieveRoomPopulation', population);
   });
 
   socket.on('disconnect', async () => {

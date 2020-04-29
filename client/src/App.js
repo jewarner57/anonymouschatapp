@@ -5,6 +5,7 @@ import './App.css';
 import Welcome from './Welcome';
 import Chatroom from './Chatroom';
 import socket from './socketConfig';
+import logo from './logo.png';
 
 class App extends React.Component {
   constructor(props) {
@@ -26,7 +27,8 @@ class App extends React.Component {
     return (
       <div className='App'>
         <header className='App-header'>
-          <h3 className='App-title'>No Know: Anonymous, No save, Chat</h3>
+          <img src={logo} alt='Logo' className='App-logo' />
+          <h3 className='App-title'> No save, Anonymous Chat</h3>
         </header>
         {this.state.activePage === 'create' ? (
           <CreateRoom socket={this.state.socket}></CreateRoom>

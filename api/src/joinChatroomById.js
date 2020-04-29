@@ -26,7 +26,7 @@ async function joinChatroomById(roomObj, channel) {
   }
 
   if (joinData.id === 0) {
-    joinData.status = 'Chatroom ID is not valid. Chatroom Not Found.';
+    joinData.status = 'Chatroom ID is not valid.';
   } else if (inputPassword === roomPassword && channel.length < maxUsers) {
     joinData.status = 'Joined Room Successfully.';
     joinData.willJoin = true;

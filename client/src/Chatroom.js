@@ -6,7 +6,12 @@ import ToggleSwitch from './ToggleSwitch';
 class Chatroom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { messageList: [] };
+    this.state = {
+      messageList: [],
+      users: 0,
+      maxUsers: '-',
+      myUsername: Math.random(),
+    };
     this.sendMessage = this.sendMessage.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSwitchFlip = this.handleSwitchFlip.bind(this);
@@ -16,13 +21,15 @@ class Chatroom extends React.Component {
     this.props.socket.emit(this.props.onSend, {
       roomID: this.props.roomID,
       body: this.state.messageValue,
+      username: this.state.myUsername,
     });
 
     let recievedMessageList = this.state.messageList;
 
     recievedMessageList.push({
       message: this.state.messageValue,
-      type: 'outgoingMessage',
+      type: 'outgoing',
+      username: this.state.myUsername,
     });
 
     this.setState({ messageList: recievedMessageList, messageValue: '' });
@@ -32,9 +39,22 @@ class Chatroom extends React.Component {
     let messageList = this.state.messageList;
 
     this.props.socket.on(this.props.onRecieve, (message) => {
-      messageList.push({ message: message, type: 'incomingMessage' });
+      messageList.push({
+        message: message.body,
+        type: 'incoming',
+        username: message.username,
+      });
       this.updateMessageList(messageList);
     });
+
+    this.props.socket.on('recieveRoomPopulation', (population) => {
+      console.log(population.users);
+      this.setState({ users: population.users, maxUsers: population.maxUsers });
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.socket.off();
   }
 
   updateMessageList(newMessageList) {
@@ -62,14 +82,34 @@ class Chatroom extends React.Component {
   render() {
     return (
       <div className='chatbox-body'>
-        <h4 className='chatTitle'>Room ID: {this.props.title}</h4>
+        <div className='chat-title-containter'>
+          <h4 className='chatTitle'>Room ID: {this.props.title}</h4>
+          <p>
+            Users in chat: ({this.state.users}/{this.state.maxUsers})
+          </p>
+        </div>
         <div className='message-list-container'>
           <div className='message-list'>
             {this.state.messageList.map((value, index) => {
               return (
-                <p key={index} className={value.type}>
-                  {value.message}
-                </p>
+                <div
+                  className={[
+                    value.type + 'Container',
+                    'messageContainer',
+                  ].join(' ')}
+                >
+                  <p
+                    className={[value.type + 'Username', 'username'].join(' ')}
+                  >
+                    {value.username}
+                  </p>
+                  <p
+                    key={index}
+                    className={[value.type + 'Message', 'message'].join(' ')}
+                  >
+                    {value.message}
+                  </p>
+                </div>
               );
             })}
           </div>
@@ -78,7 +118,7 @@ class Chatroom extends React.Component {
           <textarea
             onChange={this.handleChange}
             value={this.state.messageValue}
-            className='message'
+            className='messageBox'
             placeholder='Type stuff here'
           ></textarea>
           <div className='input-container'>

@@ -28,7 +28,9 @@ class CreateRoom extends React.Component {
   componentDidMount() {
     this.props.socket.on('recieveChatroomCode', (code) => {
       this.setState({ roomID: code }, () => {
-        this.setState({ activePage: 'chatroom' });
+        this.setState({ activePage: 'chatroom' }, () => {
+          this.props.socket.emit('getRoomPopulation', this.state.roomID);
+        });
       });
     });
   }
@@ -43,24 +45,27 @@ class CreateRoom extends React.Component {
         {this.state.activePage === 'enterSettings' ? (
           <div>
             <p>Create New Room</p>
-            <form>
-              <label htmlFor='pass'>Password</label>
-              <input
-                type='text'
-                id='pass'
-                onChange={this.handleChange}
-                value={this.state.pass}
-              ></input>
 
-              <label htmlFor='mau'>Max Allowed Users</label>
-              <input
-                type='text'
-                id='mau'
-                onChange={this.handleChange}
-                value={this.state.mau}
-              ></input>
+            <form className='form-container'>
+              <div>
+                <label htmlFor='pass'>Password:</label>
+                <input
+                  type='text'
+                  id='pass'
+                  onChange={this.handleChange}
+                  value={this.state.pass}
+                ></input>
+              </div>
+              <div>
+                <label htmlFor='mau'>Max Allowed Users:</label>
+                <input
+                  type='text'
+                  id='mau'
+                  onChange={this.handleChange}
+                  value={this.state.mau}
+                ></input>
+              </div>
             </form>
-
             <Button
               title='Create'
               buttonClicked={this.handleClick}

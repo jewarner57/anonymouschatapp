@@ -4,7 +4,7 @@ var fs = require('fs');
 async function createChatroom(settings, userId) {
   let password = settings.password;
   let maxUsers = settings.maxUsers;
-  let token = Math.floor(Math.random() * 100000000000);
+  let token = Math.floor(Math.random() * Date.now());
 
   let newChatroom = {
     id: token,
