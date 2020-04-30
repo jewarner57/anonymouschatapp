@@ -79,6 +79,7 @@ class CreateRoom extends React.Component {
             onSend={'sendPrivateMessage'}
             roomID={this.state.roomID}
             onRecieve={'recieve' + this.state.roomID}
+            myUsername={this.props.myUsername}
           ></Chatroom>
         ) : null}
       </div>

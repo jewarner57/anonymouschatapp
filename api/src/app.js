@@ -58,12 +58,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendPrivateMessage', (message) => {
-    socket.broadcast
-      .to(message.roomID)
-      .emit('recieve' + message.roomID, {
-        body: message.body,
-        username: message.username,
-      });
+    socket.broadcast.to(message.roomID).emit('recieve' + message.roomID, {
+      body: message.body,
+      username: message.username,
+    });
   });
 
   socket.on('getRoomPopulation', async (roomID) => {
@@ -77,6 +75,8 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', async () => {
     //console.log('Client Disconnected');
+    console.log('update pop');
+    io.sockets.emit('updateRoomPopulation');
     await findEmptyRooms.findEmptyRooms(io);
   });
 });

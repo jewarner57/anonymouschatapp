@@ -5,7 +5,7 @@ async function getRoomMaxUsers(id) {
   chatroomObj = JSON.parse(await fs.promises.readFile(chatrooms, 'utf8'));
 
   let rooms = chatroomObj.chatrooms;
-  let maxUsers = 10;
+  let maxUsers = '-';
 
   for (let i = 0; i < rooms.length; i++) {
     if (id == rooms[i].id) {

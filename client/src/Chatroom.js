@@ -10,7 +10,7 @@ class Chatroom extends React.Component {
       messageList: [],
       users: 0,
       maxUsers: '-',
-      myUsername: Math.random(),
+      myUsername: this.props.myUsername,
     };
     this.sendMessage = this.sendMessage.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -48,8 +48,11 @@ class Chatroom extends React.Component {
     });
 
     this.props.socket.on('recieveRoomPopulation', (population) => {
-      console.log(population.users);
       this.setState({ users: population.users, maxUsers: population.maxUsers });
+    });
+
+    this.props.socket.on('updateRoomPopulation', () => {
+      this.props.socket.emit('getRoomPopulation', this.props.roomID);
     });
   }
 
@@ -93,6 +96,7 @@ class Chatroom extends React.Component {
             {this.state.messageList.map((value, index) => {
               return (
                 <div
+                  key={'container' + index}
                   className={[
                     value.type + 'Container',
                     'messageContainer',

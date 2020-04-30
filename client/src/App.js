@@ -6,6 +6,12 @@ import Welcome from './Welcome';
 import Chatroom from './Chatroom';
 import socket from './socketConfig';
 import logo from './logo.png';
+const {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals,
+} = require('unique-names-generator');
 
 class App extends React.Component {
   constructor(props) {
@@ -15,6 +21,9 @@ class App extends React.Component {
       response: 0,
       endpoint: 'http://localhost:5000/',
       socket: socket,
+      myUsername: uniqueNamesGenerator({
+        dictionaries: [adjectives, colors, animals],
+      }),
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -31,9 +40,15 @@ class App extends React.Component {
           <h3 className='App-title'> No save, Anonymous Chat</h3>
         </header>
         {this.state.activePage === 'create' ? (
-          <CreateRoom socket={this.state.socket}></CreateRoom>
+          <CreateRoom
+            socket={this.state.socket}
+            myUsername={this.state.myUsername}
+          ></CreateRoom>
         ) : this.state.activePage === 'join' ? (
-          <JoinRoom socket={this.state.socket}></JoinRoom>
+          <JoinRoom
+            socket={this.state.socket}
+            myUsername={this.state.myUsername}
+          ></JoinRoom>
         ) : this.state.activePage === 'welcome' ? (
           <div>
             <Welcome buttonClicked={this.handleClick.bind(this)}></Welcome>
@@ -43,7 +58,8 @@ class App extends React.Component {
                 title='Global Chat'
                 onSend='sendGlobalMessage'
                 onRecieve='receiveGlobalMessage'
-                roomID='Global'
+                roomID='global'
+                myUsername={this.state.myUsername}
               ></Chatroom>
             </div>
           </div>
